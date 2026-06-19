@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Student Details</title>
+
+  <style>
+    body {
+      font-family: Arial;
+      background-color: #eef4ff;
+      padding: 30px;
+    }
+
+    h2 {
+      margin-bottom: 20px;
+    }
+
+    .container {
+      display: flex;
+      gap: 30px;
+    }
+
+    .form-box, .table-box {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px gray;
+    }
+
+    .form-box {
+      width: 32%;
+    }
+
+    .table-box {
+      width: 65%;
+      overflow-x: auto;
+    }
+
+    label {
+      display: block;
+      margin-top: 10px;
+      margin-bottom: 5px;
+    }
+
+    input, select {
+      width: 95%;
+      padding: 8px;
+      margin-bottom: 10px;
+    }
+
+    /* GENDER ALIGNMENT */
+    .gender-box {
+      display: flex;
+      gap: 20px;
+      margin-bottom: 10px;
+    }
+
+    .gender-box label {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    button {
+      padding: 7px 12px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .save {
+      background-color: green;
+      color: white;
+    }
+
+    .edit {
+      background-color: blue;
+      color: white;
+    }
+
+    .delete {
+      background-color: red;
+      color: white;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      border: 1px solid gray;
+      padding: 10px;
+      text-align: center;
+    }
+
+    /* ⭐ HEADER COLOR CHANGED HERE */
+    th {
+      background-color: #e5e7eb;  /* gray instead of blue */
+      color: black;
+    }
+  </style>
+</head>
+
+<body>
+
+<h2>Student Details Page</h2>
+
+<div class="container">
+
+  <!-- FORM -->
+  <div class="form-box">
+    <h3>Student Form</h3>
+
+    <label>First Name:</label>
+    <input type="text" id="fname">
+
+    <label>Last Name:</label>
+    <input type="text" id="lname">
+
+    <label>Gender:</label>
+    <div class="gender-box">
+      <label><input type="radio" name="gender" value="Male"> Male</label>
+      <label><input type="radio" name="gender" value="Female"> Female</label>
+    </div>
+
+    <label>Email:</label>
+    <input type="email" id="email">
+
+    <label>Phone No:</label>
+    <input type="number" id="phone">
+
+    <label>12th Mark:</label>
+    <input type="number" id="mark">
+
+    <label>Course:</label>
+    <select id="course">
+      <option value="">-- Select Course --</option>
+      <option value="AIML">AIML</option>
+      <option value="IT">IT</option>
+      <option value="CSE">CSE</option>
+      <option value="EEE">EEE</option>
+    </select>
+
+    <button class="save" onclick="saveStudent()">Save</button>
+  </div>
+
+  <!-- TABLE -->
+  <div class="table-box">
+    <h3>Student Details</h3>
+
+    <table id="studentTable">
+      <tr>
+        <th>First Name</th>
+        <th>Last Name</th>
+        <th>Gender</th>
+        <th>Email</th>
+        <th>Phone</th>
+        <th>Mark</th>
+        <th>Course</th>
+        <th>Action</th>
+      </tr>
+    </table>
+  </div>
+
+</div>
+
+<script>
+let editRow = null;
+
+function getGender() {
+  let g = document.getElementsByName("gender");
+  for (let i = 0; i < g.length; i++) {
+    if (g[i].checked) return g[i].value;
+  }
+  return "";
+}
+
+function saveStudent() {
+  let fname = document.getElementById("fname").value;
+  let lname = document.getElementById("lname").value;
+  let gender = getGender();
+  let email = document.getElementById("email").value;
+  let phone = document.getElementById("phone").value;
+  let mark = document.getElementById("mark").value;
+  let course = document.getElementById("course").value;
+
+  if (fname=="" || lname=="" || gender=="" || email=="" || phone=="" || mark=="" || course=="") {
+    alert("Please fill all details");
+    return;
+  }
+
+  let table = document.getElementById("studentTable");
+
+  if (editRow == null) {
+    let row = table.insertRow();
+
+    row.insertCell(0).innerHTML = fname;
+    row.insertCell(1).innerHTML = lname;
+    row.insertCell(2).innerHTML = gender;
+    row.insertCell(3).innerHTML = email;
+    row.insertCell(4).innerHTML = phone;
+    row.insertCell(5).innerHTML = mark;
+    row.insertCell(6).innerHTML = course;
+    row.insertCell(7).innerHTML =
+      `<button class="edit" onclick="editStudent(this)">Edit</button>
+       <button class="delete" onclick="deleteStudent(this)">Delete</button>`;
+  } else {
+    editRow.cells[0].innerHTML = fname;
+    editRow.cells[1].innerHTML = lname;
+    editRow.cells[2].innerHTML = gender;
+    editRow.cells[3].innerHTML = email;
+    editRow.cells[4].innerHTML = phone;
+    editRow.cells[5].innerHTML = mark;
+    editRow.cells[6].innerHTML = course;
+
+    editRow = null;
+  }
+
+  clearForm();
+}
+
+function editStudent(button) {
+  editRow = button.parentElement.parentElement;
+
+  document.getElementById("fname").value = editRow.cells[0].innerHTML;
+  document.getElementById("lname").value = editRow.cells[1].innerHTML;
+
+  let gender = editRow.cells[2].innerHTML;
+  let g = document.getElementsByName("gender");
+  for (let i = 0; i < g.length; i++) {
+    g[i].checked = (g[i].value == gender);
+  }
+
+  document.getElementById("email").value = editRow.cells[3].innerHTML;
+  document.getElementById("phone").value = editRow.cells[4].innerHTML;
+  document.getElementById("mark").value = editRow.cells[5].innerHTML;
+  document.getElementById("course").value = editRow.cells[6].innerHTML;
+}
+
+function deleteStudent(button) {
+  button.parentElement.parentElement.remove();
+  editRow = null;
+  clearForm();
+}
+
+function clearForm() {
+  document.getElementById("fname").value = "";
+  document.getElementById("lname").value = "";
+  document.getElementById("email").value = "";
+  document.getElementById("phone").value = "";
+  document.getElementById("mark").value = "";
+  document.getElementById("course").value = "";
+
+  let g = document.getElementsByName("gender");
+  for (let i = 0; i < g.length; i++) {
+    g[i].checked = false;
+  }
+}
+</script>
+
+</body>
+</html>
